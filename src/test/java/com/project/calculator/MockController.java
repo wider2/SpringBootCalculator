@@ -9,7 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
 
 import org.springframework.http.HttpStatus;
@@ -24,9 +26,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 
 @RunWith(MockitoJUnitRunner.class)
+@SpringBootTest
 public class MockController {
 
-    private MockMvc mvc;
+    private MockMvc mockMvc;
     private CalcResult modelSubtract;
     private CalcResult modelAdd;
     private CalcResult modelMultiply;
@@ -46,12 +49,14 @@ public class MockController {
         modelResponseResult = new ResponseResult(false, "Input parameter is incorrect. Please fix it.");
 
         JacksonTester.initFields(this, new ObjectMapper());
-        mvc = MockMvcBuilders.standaloneSetup(controller).build();
+
+        MockitoAnnotations.initMocks(this);
+        this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
     @Test
     public void TestShowControllerAdd() throws Exception {
-        MockHttpServletResponse response = mvc.perform(
+        MockHttpServletResponse response = mockMvc.perform(
                 get("/api/add?first=2&second=2")
                         .accept(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
@@ -63,7 +68,7 @@ public class MockController {
 
     @Test
     public void TestShowControllerAddNegative() throws Exception {
-        MockHttpServletResponse response = mvc.perform(
+        MockHttpServletResponse response = mockMvc.perform(
                 get("/api/add?first=2bad")
                         .accept(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
@@ -72,7 +77,7 @@ public class MockController {
 
     @Test
     public void TestShowControllerAddWrongValue() throws Exception {
-        MockHttpServletResponse response = mvc.perform(
+        MockHttpServletResponse response = mockMvc.perform(
                 get("/api/add?first=2&second=2string")
                         .accept(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
@@ -84,7 +89,7 @@ public class MockController {
 
     @Test
     public void TestShowControllerSubtract() throws Exception {
-        MockHttpServletResponse response = mvc.perform(
+        MockHttpServletResponse response = mockMvc.perform(
                 get("/api/subtract?first=9&second=-9")
                         .accept(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
@@ -96,7 +101,7 @@ public class MockController {
 
     @Test
     public void TestShowControllerSubtractWrongValue() throws Exception {
-        MockHttpServletResponse response = mvc.perform(
+        MockHttpServletResponse response = mockMvc.perform(
                 get("/api/subtract")
                         .accept(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
@@ -106,7 +111,7 @@ public class MockController {
 
     @Test
     public void TestShowControllerMultiply() throws Exception {
-        MockHttpServletResponse response = mvc.perform(
+        MockHttpServletResponse response = mockMvc.perform(
                 get("/api/multiply?first=3&second=3")
                         .accept(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 
